@@ -75,6 +75,11 @@ def check_image_size(dataset_dict, image):
     Raise an error if the image does not match the size specified in the dict.
     """
     if "width" in dataset_dict or "height" in dataset_dict:
+        # this was raising a SizeMismatchError when when image taken with a phone is taken vertically
+        # To ensure bbox always remap to original image size
+        dataset_dict["width"] = image.shape[1]
+        dataset_dict["height"] = image.shape[0]  # the image doesn't lie. I find this more robust
+
         image_wh = (image.shape[1], image.shape[0])
         expected_wh = (dataset_dict["width"], dataset_dict["height"])
         if not image_wh == expected_wh:
